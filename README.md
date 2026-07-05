@@ -51,7 +51,7 @@ the runs reported in the paper (seeds 1, 7, 13, 42, 101).
 
 ## Archive
 A frozen copy of this release is archived on Zenodo:
-DOI: [INSERT ZENODO DOI AFTER CREATING THE RELEASE]
+DOI: 10.5281/zenodo.21200225
 
 ## License
 MIT — see LICENSE.
