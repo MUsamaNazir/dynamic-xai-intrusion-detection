@@ -1,0 +1,3 @@
+latency mean 0.19 ms, p95 0.31 ms/alert
+throughput 5221 alerts/s (cpu)
+RAM 1.54 GB

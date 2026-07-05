@@ -1,0 +1,12 @@
+numpy>=2.0
+pandas
+pyarrow
+scikit-learn
+imbalanced-learn
+xgboost
+torch
+shap
+lime
+scipy
+psutil
+matplotlib

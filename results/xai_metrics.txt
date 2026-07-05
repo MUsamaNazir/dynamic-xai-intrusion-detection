@@ -1,0 +1,4 @@
+SHAP TreeExplainer: 2.0 ms/sample
+SHAP GradientExplainer (full DEF): 966.5 ms/sample
+Fidelity (Spearman SHAP vs permutation importance): 0.79
+LIME: 149.2 ms/instance, top-10 Jaccard stability 0.63
