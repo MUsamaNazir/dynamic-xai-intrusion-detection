@@ -61,7 +61,7 @@ def build_graph_embed(X, meta, hidden=16):
         deg_out = g.groupby("s").size(); deg_in = g.groupby("d").size()
         fanout = g.groupby("s")["d"].nunique()
         for _, r in g.iterrows():
-            out[r["i"]] = [deg_out.get(r["s"], 0), deg_in.get(r["s"], 0),
+            out[r["i"]] = [deg_out.get(r["s"], 0), deg_in.get(r["d"], 0),
                            fanout.get(r["s"], 0), len(g)]
     return np.log1p(out)
 

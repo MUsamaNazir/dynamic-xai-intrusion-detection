@@ -73,22 +73,39 @@ out.write(f"LIME: {np.mean(times)*1000:.1f} ms/instance, "
           f"top-10 Jaccard stability {np.mean(jac):.2f}\n")
 out.close(); print(open("results/xai_metrics.txt").read())
 
-# --- runtime profile (Section 5.9) ---
-lat = []
+# --- runtime profile: the DEPLOYED path = XGBoost detection + TreeExplainer ---
+import psutil
 proc = psutil.Process()
+Xte, B, N = te["X"], 32, min(len(te["X"]), 3200)
+lat_det, lat_exp = [], []
+for i in range(0, N, B):
+    xb = Xte[i:i+B]
+    t0 = time.perf_counter(); xgb.predict_proba(xb); t1 = time.perf_counter()
+    ex.shap_values(xb);                              t2 = time.perf_counter()
+    lat_det.append((t1 - t0) / len(xb) * 1000)
+    lat_exp.append((t2 - t1) / len(xb) * 1000)
+det, expl_ = np.array(lat_det), np.array(lat_exp)
+tot = det + expl_
+
+# fusion forward pass, retained for the neural-backbone comparison in Sec 6.4
+lat_fus = []
 with torch.no_grad():
-    for i in range(0, 3200, 32):
-        b = torch.tensor(W[i:i+32]).to(M.DEVICE)
-        g = torch.tensor(G[Widx[i:i+32]], dtype=torch.float32).to(M.DEVICE)
-        t0 = time.perf_counter(); deff(b, g); 
+    for i in range(0, 3200, B):
+        b = torch.tensor(W[i:i+B]).to(M.DEVICE)
+        g = torch.tensor(G[Widx[i:i+B]], dtype=torch.float32).to(M.DEVICE)
+        t0 = time.perf_counter(); deff(b, g)
         if M.DEVICE == "cuda": torch.cuda.synchronize()
-        lat.append((time.perf_counter() - t0) / 32 * 1000)
+        lat_fus.append((time.perf_counter() - t0) / B * 1000)
+fus = np.array(lat_fus)
+
 with open("results/runtime.txt", "w") as f:
-    f.write(f"latency mean {np.mean(lat):.2f} ms, p95 {np.percentile(lat,95):.2f} ms/alert\n")
-    f.write(f"throughput {1000/np.mean(lat)*1:.0f} alerts/s ({M.DEVICE})\n")
-    f.write(f"RAM {proc.memory_info().rss/1e9:.2f} GB")
-    if M.DEVICE == "cuda":
-        f.write(f", GPU {torch.cuda.max_memory_allocated()/1e9:.2f} GB")
+    f.write(f"n profiled                : {N} alerts, batch {B}, device {M.DEVICE}\n")
+    f.write(f"detection only            : mean {det.mean():.2f} ms, p95 {np.percentile(det,95):.2f} ms/alert\n")
+    f.write(f"TreeExplainer attribution : mean {expl_.mean():.2f} ms, p95 {np.percentile(expl_,95):.2f} ms/alert\n")
+    f.write(f"detection + attribution   : mean {tot.mean():.2f} ms, p95 {np.percentile(tot,95):.2f} ms/alert\n")
+    f.write(f"throughput (combined)     : {1000/tot.mean():.0f} alerts/s\n")
+    f.write(f"fusion forward pass       : mean {fus.mean():.2f} ms/alert (comparison only)\n")
+    f.write(f"process resident set size : {proc.memory_info().rss/1e9:.2f} GB\n")
 print(open("results/runtime.txt").read())
 
 # --- figures with REAL feature names ---

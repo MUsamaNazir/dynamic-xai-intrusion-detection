@@ -23,12 +23,16 @@ X = X.replace([np.inf, -np.inf], np.nan)
 keep = X.isna().mean(axis=1) <= 0.5
 X, y_raw, meta = X[keep], y_raw[keep.values], meta[keep.values]
 X = X.fillna(X.median())
-# drop constant / duplicate columns, then keep 48 highest-variance features
+# drop constant and duplicate columns
 X = X.loc[:, X.nunique() > 1]
 X = X.loc[:, ~X.T.duplicated()]
-top48 = X.var().sort_values(ascending=False).head(48).index.tolist()
-X = X[top48]
-open("data/feature_names.txt", "w").write("\n".join(top48))
+# order the survivors by descending variance. All 37 are retained (the original
+# head(48) was a no-op on count since 37 < 48), but the ordering is load-bearing:
+# models.py build_graph_embed() uses column 0 as the local-activity proxy.
+feats = X.var().sort_values(ascending=False).index.tolist()
+X = X[feats]
+open("data/feature_names.txt", "w").write("\n".join(feats))
+print(f"[FEATURES] retained {len(feats)} (variance-ordered) after constant/duplicate removal")
 
 le = LabelEncoder(); y = le.fit_transform(y_raw)
 np.save("data/classes.npy", le.classes_)

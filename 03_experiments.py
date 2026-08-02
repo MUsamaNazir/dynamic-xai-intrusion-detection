@@ -118,12 +118,16 @@ summary = df.groupby("model")[["acc","prec","rec","f1","fpr","auc"]].agg(["mean"
 summary.to_csv("results/summary_mean_std.csv")
 print(summary)
 
-# significance: DEF vs each baseline on run-level macro F1
+# significance: both directions on run-level macro F1
 with open("results/significance.txt", "w") as f:
-    d = df[df.model == "DEF"].sort_values("seed")["f1"].values
-    for m in ["XGBoost", "RandomForest", "LSTM", "Transformer", "GCN"]:
-        b = df[df.model == m].sort_values("seed")["f1"].values
-        t = ttest_rel(d, b); w = wilcoxon(d, b) if not np.allclose(d, b) else None
-        f.write(f"DEF vs {m}: paired t p={t.pvalue:.4f}" +
-                (f", wilcoxon p={w.pvalue:.4f}\n" if w else "\n"))
+    for ref in ["XGBoost", "DEF"]:
+        a = df[df.model == ref].sort_values("seed")["f1"].values
+        for m in ["XGBoost", "RandomForest", "LSTM", "Transformer", "GCN", "DEF"]:
+            if m == ref:
+                continue
+            b = df[df.model == m].sort_values("seed")["f1"].values
+            t = ttest_rel(a, b)
+            w = wilcoxon(a, b) if not np.allclose(a, b) else None
+            f.write(f"{ref} vs {m}: paired t p={t.pvalue:.4g}"
+                    + (f", wilcoxon p={w.pvalue:.4g}\n" if w else "\n"))
 print(open("results/significance.txt").read())
