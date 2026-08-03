@@ -1,0 +1,4 @@
+alpha=0.6 beta=0.4 gamma=0.0
+recall floor used: 98% of baseline (absolute 67.76% macro recall)
+validation baseline macro recall: 69.14%
+tuned at theta=0.6 on the validation split

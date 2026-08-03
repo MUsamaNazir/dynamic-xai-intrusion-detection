@@ -1,3 +1,7 @@
-latency mean 0.19 ms, p95 0.31 ms/alert
-throughput 5221 alerts/s (cpu)
-RAM 1.54 GB
+n profiled                : 3200 alerts, batch 32, device cpu
+detection only            : mean 0.12 ms, p95 0.14 ms/alert
+TreeExplainer attribution : mean 2.56 ms, p95 2.71 ms/alert
+detection + attribution   : mean 2.68 ms, p95 2.84 ms/alert
+throughput (combined)     : 373 alerts/s
+fusion forward pass       : mean 0.18 ms/alert (comparison only)
+process resident set size : 0.90 GB

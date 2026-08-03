@@ -1,0 +1,10 @@
+XGBoost vs LSTM: paired t p=3.155e-07, wilcoxon p=0.0625
+XGBoost vs Transformer: paired t p=0.0008652, wilcoxon p=0.0625
+XGBoost vs DEF: paired t p=0.0001157, wilcoxon p=0.0625
+XGBoost vs GCN: paired t p=1.567e-08, wilcoxon p=0.0625
+XGBoost vs RandomForest: paired t p=0.01471, wilcoxon p=0.0625
+DEF vs LSTM: paired t p=1.792e-06, wilcoxon p=0.0625
+DEF vs Transformer: paired t p=0.03193, wilcoxon p=0.0625
+DEF vs GCN: paired t p=2.123e-08, wilcoxon p=0.0625
+DEF vs XGBoost: paired t p=0.0001157, wilcoxon p=0.0625
+DEF vs RandomForest: paired t p=5.869e-05, wilcoxon p=0.0625

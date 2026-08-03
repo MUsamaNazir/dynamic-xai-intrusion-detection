@@ -1,0 +1,3 @@
+train before SMOTE: 42622
+train after SMOTE: 293970
+k_neighbors: 5

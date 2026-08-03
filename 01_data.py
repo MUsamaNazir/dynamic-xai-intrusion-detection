@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 
 SEED = 42
-CSV_DIR = r"D:\PHD_UTM\Datasets\wataiData\csv\CICIoT2023"
+CSV_DIR = os.environ.get("CICIOT2023_DIR", "raw/ciciot2023")
 OUT = "./data"
 os.makedirs(OUT, exist_ok=True)
 
